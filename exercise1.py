@@ -30,24 +30,37 @@ class BSTNode(object):
     def __repr__(self):
         return '(%s, %r, %r)' % (self.val, self.left, self.right)
 
-def find_val_or_next_smallest(bst, x):
-    """Get the greatest value <= x in a binary search tree.
+"""
+Iterative version:
 
-    Returns None if no such value can be found.
+"""
+def find_val_or_next_smallest(bst, x, val):
+    while True:
+        if bst is None:
+            return val
+        elif bst.val == x:
+            return x
+        elif bst.val > x:
+            bst = bst.left
+        else:
+            val = bst.val
+            bst = bst.right
 
-    """
+
+
+"""
+Converted recursive calls to tail calls:
+
+def find_val_or_next_smallest(bst, x, val):
     if bst is None:
-        return None
+        return val 
     elif bst.val == x:
         return x
     elif bst.val > x:
-        return find_val_or_next_smallest(bst.left, x)
+        return find_val_or_next_smallest(bst.left, x, val)
     else:
-        right_best = find_val_or_next_smallest(bst.right, x)
-        if right_best is None:
-            return bst.val
-        return right_best
-
+        return find_val_or_next_smallest(bst.right, x, bst.val)
+"""
 
 # tests
 
@@ -65,7 +78,7 @@ tree_vals = [[], [5], [3, 5], [3, 5, 9], [1, 3, 5, 9]]
 def test():
     for vals, bst in zip(tree_vals, trees):
         for x in xrange(10):
-            y = find_val_or_next_smallest(bst, x)
+            y = find_val_or_next_smallest(bst, x, None)
             if y is None:
                 assert all(x < z for z in vals)
             else:
@@ -73,3 +86,5 @@ def test():
                 if y != x:
                     i = bisect.bisect_right(vals, x)
                     assert all(x < z for z in vals[i:])
+
+test()
